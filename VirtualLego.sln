@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1259
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualLego", "VirtualLego.vcxproj", "{BE245D8F-5E1F-431F-8D90-B6BFF0FB78B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualLego", "VirtualLego.vcxproj", "{584A2CC0-790A-4554-BAB2-D7C061E6E9CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BE245D8F-5E1F-431F-8D90-B6BFF0FB78B0}.Debug|x86.ActiveCfg = Debug|Win32
-		{BE245D8F-5E1F-431F-8D90-B6BFF0FB78B0}.Debug|x86.Build.0 = Debug|Win32
-		{BE245D8F-5E1F-431F-8D90-B6BFF0FB78B0}.Release|x86.ActiveCfg = Release|Win32
-		{BE245D8F-5E1F-431F-8D90-B6BFF0FB78B0}.Release|x86.Build.0 = Release|Win32
+		{584A2CC0-790A-4554-BAB2-D7C061E6E9CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{584A2CC0-790A-4554-BAB2-D7C061E6E9CA}.Debug|x86.Build.0 = Debug|Win32
+		{584A2CC0-790A-4554-BAB2-D7C061E6E9CA}.Release|x86.ActiveCfg = Release|Win32
+		{584A2CC0-790A-4554-BAB2-D7C061E6E9CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {37ACFA65-6BAE-4C0F-A473-A911B3161CCF}
+		SolutionGuid = {25A32AD7-A41E-46F4-824F-3E2D1334F9EA}
 	EndGlobalSection
 EndGlobal
