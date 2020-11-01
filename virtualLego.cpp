@@ -377,6 +377,7 @@ double g_camera_pos[3] = {0.0, 5.0, -8.0};
 
 void destroyAllLegoBlock(void)
 {
+
 }
 
 // initialization 공 처음 셋업
