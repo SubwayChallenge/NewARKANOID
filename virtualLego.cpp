@@ -241,7 +241,7 @@ public:
 	
 	bool hasIntersected(CSphere& ball) 
 	{
-		// Insert your code here.
+		// Insert your code here. I have to check here 
 		return false;
 	}
 
@@ -379,7 +379,7 @@ void destroyAllLegoBlock(void)
 {
 }
 
-// initialization
+// initialization 공 처음 셋업
 bool Setup()
 {
 	int i;
