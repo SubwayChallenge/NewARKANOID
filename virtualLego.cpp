@@ -248,6 +248,7 @@ public:
 	void hitBy(CSphere& ball) 
 	{
 		// Insert your code here.
+
 		//we have to do this »≠¿Ã∆√
 	}    
 	
