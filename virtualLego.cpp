@@ -70,7 +70,7 @@ public:
         if (NULL == pDevice)
             return false;
 		
-        m_mtrl.Ambient  = color;
+        m_mtrl.Ambient  = color; 
         m_mtrl.Diffuse  = color;
         m_mtrl.Specular = color;
         m_mtrl.Emissive = d3d::BLACK;
@@ -125,14 +125,16 @@ public:
 
 			//correction of position of ball
 			// Please uncomment this part because this correction of ball position is necessary when a ball collides with a wall
-			/*if(tX >= (4.5 - M_RADIUS))
-				tX = 4.5 - M_RADIUS;
-			else if(tX <=(-4.5 + M_RADIUS))
-				tX = -4.5 + M_RADIUS;
-			else if(tZ <= (-3 + M_RADIUS))
-				tZ = -3 + M_RADIUS;
-			else if(tZ >= (3 - M_RADIUS))
-				tZ = 3 - M_RADIUS;*/
+			//벽 충돌부 구현 완료
+
+			if(tX >= (2.56f - M_RADIUS))
+				tX = 2.56f - M_RADIUS;
+			else if(tX <=(-2.56f + M_RADIUS))
+				tX = -2.56f + M_RADIUS;
+			else if(tZ <= (-5.09f + M_RADIUS))
+				tZ = -5.09f + M_RADIUS;
+			else if(tZ >= (3.99f - M_RADIUS))
+				tZ = 3.99f - M_RADIUS;
 			
 			this->setCenter(tX, cord.y, tZ);
 		}
@@ -366,9 +368,11 @@ private:
 // -----------------------------------------------------------------------------
 CWall	g_legoPlane;
 CWall	g_legowall[4];
-CSphere	g_sphere[4];
-CSphere	g_target_blueball;
+CSphere	g_sphere[5]; //공 갯수 설정
+CSphere	g_target_whiteball;
+CSphere g_moving_redball; //움직이는 빨간 공 설정
 CLight	g_light;
+
 
 double g_camera_pos[3] = {0.0, 5.0, -8.0};
 
@@ -392,29 +396,35 @@ bool Setup()
     D3DXMatrixIdentity(&g_mProj);
 		
 	// create plane and set the position
-    if (false == g_legoPlane.create(Device, -1, -1, 9, 0.03f, 6, d3d::GREEN)) return false;
+    if (false == g_legoPlane.create(Device, -1, -1, 5, 0.03f, 8, d3d::BLACK)) return false;
     g_legoPlane.setPosition(0.0f, -0.0006f / 5, 0.0f);
 	
 	// create walls and set the position. note that there are four walls
-	if (false == g_legowall[0].create(Device, -1, -1, 9, 0.3f, 0.12f, d3d::DARKRED)) return false;
-	g_legowall[0].setPosition(0.0f, 0.12f, 3.06f);
-	if (false == g_legowall[1].create(Device, -1, -1, 9, 0.3f, 0.12f, d3d::DARKRED)) return false;
-	g_legowall[1].setPosition(0.0f, 0.12f, -3.06f);
-	if (false == g_legowall[2].create(Device, -1, -1, 0.12f, 0.3f, 6.24f, d3d::DARKRED)) return false;
-	g_legowall[2].setPosition(4.56f, 0.12f, 0.0f);
-	if (false == g_legowall[3].create(Device, -1, -1, 0.12f, 0.3f, 6.24f, d3d::DARKRED)) return false;
-	g_legowall[3].setPosition(-4.56f, 0.12f, 0.0f);
+	if (false == g_legowall[0].create(Device, -1, -1, 5.25f, 0.3f, 0.12f, d3d::CYAN)) return false;
+	g_legowall[0].setPosition(0.0f, 0.12f, 3.99f);
+	if (false == g_legowall[1].create(Device, -1, -1, 5.25f, 0.3f, 0.12f, d3d::CYAN)) return false;//아래벽 게임 진행 시 보이는 경계 바로 아래에 위치 : 부딪히면 공 respawn 위해
+	g_legowall[1].setPosition(0.0f, 0.12f, -4.99f);
+	if (false == g_legowall[2].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
+	g_legowall[2].setPosition(2.56f, 0.12f, 0.0f);
+	if (false == g_legowall[3].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
+	g_legowall[3].setPosition(-2.56f, 0.12f, 0.0f);
 
-	// create four balls and set the position
-	for (i=0;i<4;i++) {
+	// create 5 balls and set the position
+	for (i=0;i<5;i++) {
 		if (false == g_sphere[i].create(Device, sphereColor[i])) return false;
 		g_sphere[i].setCenter(spherePos[i][0], (float)M_RADIUS , spherePos[i][1]);
 		g_sphere[i].setPower(0,0);
 	}
-	
-	// create blue ball for set direction
-    if (false == g_target_blueball.create(Device, d3d::BLUE)) return false;
-	g_target_blueball.setCenter(.0f, (float)M_RADIUS , .0f);
+
+	// create white ball for set direction  마우스 커서 움직임 따라가는 것 초기화 때문에 일단 맨 왼쪽으로 설정
+    if (false == g_target_whiteball.create(Device, d3d::WHITE)) return false;
+	g_target_whiteball.setCenter(-2.96f, (float)M_RADIUS , -3.95f);
+
+
+	if (false == g_moving_redball.create(Device, d3d::RED)) return false;
+	D3DXVECTOR3 startpos = g_target_whiteball.getCenter();
+	g_moving_redball.setCenter(startpos.x, (float)M_RADIUS, startpos.z+((float)M_RADIUS*2));
+
 	
 	// light setting 
     D3DLIGHT9 lit;
@@ -465,7 +475,7 @@ void Cleanup(void)
 
 // timeDelta represents the time between the current image frame and the last image frame.
 // the distance of moving balls should be "velocity * timeDelta"
-bool Display(float timeDelta)
+bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 {
 	int i=0;
 	int j = 0;
@@ -477,26 +487,35 @@ bool Display(float timeDelta)
 		Device->BeginScene();
 		
 		// update the position of each ball. during update, check whether each ball hit by walls.
-		for( i = 0; i < 4; i++) {
+		for( i = 0; i < 5; i++) {
 			g_sphere[i].ballUpdate(timeDelta);
-			for(j = 0; j < 4; j++){ g_legowall[i].hitBy(g_sphere[j]); }
 		}
 
-		// check whether any two balls hit together and update the direction of balls
-		for(i = 0 ;i < 4; i++){
-			for(j = 0 ; j < 4; j++) {
-				if(i >= j) {continue;}
-				g_sphere[i].hitBy(g_sphere[j]);
-			}
+		g_moving_redball.ballUpdate(timeDelta);
+		for (j = 0; j < 4; j++) 
+		{
+			g_legowall[i].hitBy(g_moving_redball);
 		}
+
+
+		// check whether any two balls hit together and update the direction of balls
+		for(i = 0 ;i < 5; i++){
+			g_sphere[i].hitBy(g_moving_redball);
+		}
+
+		g_target_whiteball.hitBy(g_moving_redball);
 
 		// draw plane, walls, and spheres
 		g_legoPlane.draw(Device, g_mWorld);
 		for (i=0;i<4;i++) 	{
 			g_legowall[i].draw(Device, g_mWorld);
+		}
+		for (i = 0; i < 5; i++) {
 			g_sphere[i].draw(Device, g_mWorld);
 		}
-		g_target_blueball.draw(Device, g_mWorld);
+		
+		g_target_whiteball.draw(Device, g_mWorld);
+		g_moving_redball.draw(Device, g_mWorld);
         g_light.draw(Device);
 		
 		Device->EndScene();
@@ -513,6 +532,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     static int old_x = 0;
     static int old_y = 0;
     static enum { WORLD_MOVE, LIGHT_MOVE, BLOCK_MOVE } move = WORLD_MOVE;
+
 	
 	switch( msg ) {
 	case WM_DESTROY:
@@ -534,17 +554,25 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 }
                 break;
             case VK_SPACE:
-				
-				D3DXVECTOR3 targetpos = g_target_blueball.getCenter();
-				D3DXVECTOR3	whitepos = g_sphere[3].getCenter();
-				double theta = acos(sqrt(pow(targetpos.x - whitepos.x, 2)) / sqrt(pow(targetpos.x - whitepos.x, 2) +
-					pow(targetpos.z - whitepos.z, 2)));		// 기본 1 사분면
-				if (targetpos.z - whitepos.z <= 0 && targetpos.x - whitepos.x >= 0) { theta = -theta; }	//4 사분면
-				if (targetpos.z - whitepos.z >= 0 && targetpos.x - whitepos.x <= 0) { theta = PI - theta; } //2 사분면
-				if (targetpos.z - whitepos.z <= 0 && targetpos.x - whitepos.x <= 0){ theta = PI + theta; } // 3 사분면
-				double distance = sqrt(pow(targetpos.x - whitepos.x, 2) + pow(targetpos.z - whitepos.z, 2));
-				g_sphere[3].setPower(distance * cos(theta), distance * sin(theta));
+				isReset = false;
 
+				D3DXVECTOR3 targetpos = g_target_whiteball.getCenter();
+				D3DXVECTOR3	redpos = g_moving_redball.getCenter();
+				double theta = acos(sqrt(pow(targetpos.x - redpos.x, 2)) / sqrt(pow(targetpos.x - redpos.x, 2) +
+					pow(targetpos.z - redpos.z, 2)));		// 기본 1 사분면
+				if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x >= 0) { theta = -theta; }	//4 사분면
+				if (targetpos.z - redpos.z >= 0 && targetpos.x - redpos.x <= 0) { theta = PI - theta; } //2 사분면
+				if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x <= 0){ theta = PI + theta; } // 3 사분면
+				double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
+				g_moving_redball.setPower(distance * cos(theta), distance * sin(theta));
+
+				//빨간공 아래로 내려가면 스페이스 안누른 상태로 만들기. 그런데 어디에 넣을지 모르겠음
+				D3DXVECTOR3 coord = g_moving_redball.getCenter();
+				if (coord.y < 0.20f) {
+					isReset = true;
+				}
+
+				
 				break;
 
 			}
@@ -557,13 +585,25 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             int new_y = HIWORD(lParam);
 			float dx;
 			float dy;
-			
-            if (LOWORD(wParam) & MK_LBUTTON) {
-				
-                if (isReset) {
-                    isReset = false;
-                } else {
-                    D3DXVECTOR3 vDist;
+			int x_pos;
+          
+            if (isReset) {//하얀공 마우스 따라 움직이기, 첫 흰공 위치와 관계없이 잘 맞도록 하고 싶기는 한데 아직 해결 못함 + 왼쪽 오른쪽 벽 너머 공간에 마우스 커서 따라서 못가게 하기
+
+				dx = (old_x - new_x);
+				dy = (old_y - new_y);// * 0.01f;
+
+				D3DXVECTOR3 coord3d = g_target_whiteball.getCenter();
+				g_target_whiteball.setCenter((coord3d.x) + (dx*(-0.006f)), coord3d.y, -3.95f);
+				g_moving_redball.setCenter((coord3d.x) + (dx*(-0.006f)), coord3d.y, -3.95f+ ((float)M_RADIUS * 2));
+
+				old_x = new_x;
+				old_y = new_y;
+
+				move = WORLD_MOVE;
+
+        
+			// world 회전하는 부분 필요 없음
+             /*     D3DXVECTOR3 vDist;
                     D3DXVECTOR3 vTrans;
                     D3DXMATRIX mTrans;
                     D3DXMATRIX mX;
@@ -578,27 +618,28 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         g_mWorld = g_mWorld * mX * mY;
 						
                         break;
-                    }
-                }
+                    }*/
+                
 				
                 old_x = new_x;
                 old_y = new_y;
 
-            } else {
-                isReset = true;
-				
-				if (LOWORD(wParam) & MK_RBUTTON) {
-					dx = (old_x - new_x);// * 0.01f;
-					dy = (old_y - new_y);// * 0.01f;
-		
-					D3DXVECTOR3 coord3d=g_target_blueball.getCenter();
-					g_target_blueball.setCenter(coord3d.x+dx*(-0.007f),coord3d.y,coord3d.z+dy*0.007f );
-				}
+			}
+			else { //스페이스 누른 후
+
+				dx = (old_x - new_x);
+				dy = (old_y - new_y);// * 0.01f;
+
+				D3DXVECTOR3 coord3d = g_target_whiteball.getCenter();
+				g_target_whiteball.setCenter((coord3d.x) + (dx*(-0.006f)), coord3d.y, -3.95f);
+
 				old_x = new_x;
 				old_y = new_y;
-				
-                move = WORLD_MOVE;
-            }
+
+				move = WORLD_MOVE;
+
+			}
+
             break;
         }
 	}
