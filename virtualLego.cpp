@@ -25,9 +25,8 @@ const int Height = 768;
 
 // There are four balls
 // initialize the position (coordinate) of each ball (ball0 ~ ball3)
-const float spherePos[4][2] = { {-2.7f,0} , {+2.4f,0} , {3.3f,0} , {-2.7f,-0.9f}}; 
-// initialize the color of each ball (ball0 ~ ball3)
-const D3DXCOLOR sphereColor[4] = {d3d::RED, d3d::RED, d3d::YELLOW, d3d::WHITE};
+// 노란공 위치들 공 갯수 늘어나면 더 늘려야한다.아래 for 문의 i도 모두 공 갯수만큼. sphere을 검색하면 편함
+const float spherePos[5][2] = { {-1.7f,0} , {-1.25f,0} , {-0.8f,0} , {-0.35f,0} , {0.1f,0}};
 
 // -----------------------------------------------------------------------------
 // Transform matrices
@@ -106,9 +105,32 @@ public:
 		return false;
 	}
 	
-	void hitBy(CSphere& ball) 
-	{ 
-		// Insert your code here.
+	void hitBy(CSphere& ball) {
+		/* 이런 느낌으로 쓰면 될 것 같은데 getCenter 안됨
+		https://m.blog.naver.com/PostView.nhn?blogId=caminq&logNo=100133230971&proxyReferer=https:%2F%2Fwww.google.co.kr%2F
+		
+		D3DXVECTOR3 coord = ball.getCenter();
+
+		if (tX >= (2.56f - M_RADIUS))
+			tX = 2.56f - M_RADIUS;
+		else if (tX <= (-2.56f + M_RADIUS))
+			tX = -2.56f + M_RADIUS;
+		else if (tZ <= (-6.99f + M_RADIUS))
+			tZ = -5.09f + M_RADIUS;
+		else if (tZ >= (3.99f - M_RADIUS))
+			tZ = 3.99f - M_RADIUS;
+
+
+		if (block_array[x][y] == 1) { //공이 벽에 부딪칠 경우
+			if (x >= 0 && y == 0) {   //왼쪽 벽에 부딪혔을 때
+				ay *= (-1);
+				y = y + ay + ay;
+			}
+			if (x >= 0 && y == 13) {  //오른쪽 벽에 부딪혔을 때
+				ay *= (-1);
+				y = y + ay + ay;
+			}*/
+
 	}
 
 	void ballUpdate(float timeDiff) 
@@ -131,7 +153,7 @@ public:
 				tX = 2.56f - M_RADIUS;
 			else if(tX <=(-2.56f + M_RADIUS))
 				tX = -2.56f + M_RADIUS;
-			else if(tZ <= (-5.09f + M_RADIUS))
+			else if(tZ <= (-6.99f + M_RADIUS))
 				tZ = -5.09f + M_RADIUS;
 			else if(tZ >= (3.99f - M_RADIUS))
 				tZ = 3.99f - M_RADIUS;
@@ -243,15 +265,13 @@ public:
 	
 	bool hasIntersected(CSphere& ball) 
 	{
-		// Insert your code here. I have to check here 
+		// Insert your code here. 위에 구현해서 똑같이 쓰면 됨.
 		return false;
 	}
 
 	void hitBy(CSphere& ball) 
 	{
-		// Insert your code here.
-
-		//we have to do this 화이팅
+		// Insert your code here.위에 구현해서 똑같이 쓰면 됨.
 	}    
 	
 	void setPosition(float x, float y, float z)
@@ -372,7 +392,7 @@ CSphere	g_sphere[5]; //공 갯수 설정
 CSphere	g_target_whiteball;
 CSphere g_moving_redball; //움직이는 빨간 공 설정
 CLight	g_light;
-
+static bool isReset = true;
 
 double g_camera_pos[3] = {0.0, 5.0, -8.0};
 
@@ -411,7 +431,7 @@ bool Setup()
 
 	// create 5 balls and set the position
 	for (i=0;i<5;i++) {
-		if (false == g_sphere[i].create(Device, sphereColor[i])) return false;
+		if (false == g_sphere[i].create(Device, d3d::YELLOW)) return false;
 		g_sphere[i].setCenter(spherePos[i][0], (float)M_RADIUS , spherePos[i][1]);
 		g_sphere[i].setPower(0,0);
 	}
@@ -419,12 +439,13 @@ bool Setup()
 	// create white ball for set direction  마우스 커서 움직임 따라가는 것 초기화 때문에 일단 맨 왼쪽으로 설정
     if (false == g_target_whiteball.create(Device, d3d::WHITE)) return false;
 	g_target_whiteball.setCenter(-2.96f, (float)M_RADIUS , -3.95f);
+	g_target_whiteball.setPower(0, 0);
 
 
 	if (false == g_moving_redball.create(Device, d3d::RED)) return false;
 	D3DXVECTOR3 startpos = g_target_whiteball.getCenter();
 	g_moving_redball.setCenter(startpos.x, (float)M_RADIUS, startpos.z+((float)M_RADIUS*2));
-
+	g_moving_redball.setPower(0, 0);
 	
 	// light setting 
     D3DLIGHT9 lit;
@@ -486,6 +507,15 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 		Device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00afafaf, 1.0f, 0);
 		Device->BeginScene();
 		
+		//빨간공 아래로 내려가면 스페이스 안누른 상태로 만들기.
+		D3DXVECTOR3 coord = g_moving_redball.getCenter();
+		if (coord.z <-5.5f) {
+			isReset = true;
+			D3DXVECTOR3 coord2 = g_target_whiteball.getCenter();
+			g_moving_redball.setCenter(coord2.x, (float)M_RADIUS, coord2.z + ((float)M_RADIUS * 2));
+			g_moving_redball.setPower(0, 0);
+		}
+
 		// update the position of each ball. during update, check whether each ball hit by walls.
 		for( i = 0; i < 5; i++) {
 			g_sphere[i].ballUpdate(timeDelta);
@@ -528,7 +558,6 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool wire = false;
-	static bool isReset = true;
     static int old_x = 0;
     static int old_y = 0;
     static enum { WORLD_MOVE, LIGHT_MOVE, BLOCK_MOVE } move = WORLD_MOVE;
@@ -566,11 +595,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
 				g_moving_redball.setPower(distance * cos(theta), distance * sin(theta));
 
-				//빨간공 아래로 내려가면 스페이스 안누른 상태로 만들기. 그런데 어디에 넣을지 모르겠음
-				D3DXVECTOR3 coord = g_moving_redball.getCenter();
-				if (coord.y < 0.20f) {
-					isReset = true;
-				}
+	
 
 				
 				break;

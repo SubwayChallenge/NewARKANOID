@@ -2,17 +2,17 @@
   virtualLego.cpp
 c:\users\sheee\source\oop16_proj3\d3dutility.h(23): warning C4005: 'INFINITY': 매크로 재정의
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\corecrt_math.h(89): note: 'INFINITY'의 이전 정의를 참조하십시오.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(116): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(131): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(133): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(135): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(137): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(115): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(130): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(132): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(134): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(136): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(153): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 c:\users\sheee\source\oop16_proj3\virtuallego.cpp(154): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(155): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(267): warning C4305: 'return': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(592): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(593): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(630): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(631): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(588): warning C4101: 'x_pos' :참조되지 않은 지역 변수입니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(266): warning C4305: 'return': 'double'에서 'float'(으)로 잘립니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(596): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(597): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(634): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(635): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\sheee\source\oop16_proj3\virtuallego.cpp(592): warning C4101: 'x_pos' :참조되지 않은 지역 변수입니다.
   VirtualLego.vcxproj -> C:\Users\sheee\source\oop16_proj3\.\Debug\VirtualLego.exe
