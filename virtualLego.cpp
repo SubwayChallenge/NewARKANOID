@@ -21,12 +21,32 @@ IDirect3DDevice9* Device = NULL;
 
 // window size
 const int Width  = 1024;
-const int Height = 768;
+const int Height = 800;
 
 // There are four balls
 // initialize the position (coordinate) of each ball (ball0 ~ ball3)
-// 노란공 위치들 공 갯수 늘어나면 더 늘려야한다.아래 for 문의 i도 모두 공 갯수만큼. sphere을 검색하면 편함
-const float spherePos[5][2] = { {-1.7f,0} , {-1.25f,0} , {-0.8f,0} , {-0.35f,0} , {0.1f,0}};
+// 노란공 위치들 공 갯수 늘어나면 더 늘려야한다.아래 for 문의 i도 모두 공 갯수만큼.
+// sphere을 검색하면 편함
+//const float spherePos[5][2] = { {-1.7f,0} , {-1.25f,0} , {-0.8f,0} , {-0.35f,0} , {0.1f,0}};
+
+//1인 곳에만 공을 그리면 스마일 얼굴 그려져융! 이렇게 그리면 공 57개
+static int smile[14][14]{
+	0,0,0,1,1,1,1,1,1,1,1,0,0,0,
+	0,0,1,0,0,0,0,0,0,0,0,1,0,0,
+	0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+	0,1,0,0,0,1,1,1,1,0,0,0,1,0,
+	0,1,0,0,1,0,0,0,0,1,0,0,1,0,
+	0,1,0,1,0,0,0,0,0,0,1,0,1,0,
+	0,1,0,0,0,0,1,1,0,0,0,0,1,0,
+	0,1,0,0,0,0,1,0,0,0,0,0,1,0,
+	0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+	0,1,0,1,0,1,0,0,1,0,1,0,1,0,
+	0,1,0,0,1,0,0,0,0,1,0,0,1,0,
+	0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+	0,0,1,0,0,0,0,0,0,0,0,1,0,0,
+	0,0,0,1,1,1,1,1,1,1,1,0,0,0
+};
+
 
 // -----------------------------------------------------------------------------
 // Transform matrices
@@ -35,7 +55,7 @@ D3DXMATRIX g_mWorld;
 D3DXMATRIX g_mView;
 D3DXMATRIX g_mProj;
 
-#define M_RADIUS 0.21   // ball radius
+#define M_RADIUS 0.18   // ball radius
 #define PI 3.14159265
 #define M_HEIGHT 0.01
 #define DECREASE_RATE 0.9982
@@ -101,12 +121,22 @@ public:
     bool hasIntersected(CSphere& ball) 
 	{
 		// Insert your code here.
+		//빨간 공이 노란공에 부딪혔을 때 return true
 
+		//빨간 공이 하얀 공에 부딪혔을 때 return true
+		/*D3DXVECTOR3 r_coord = g_moving_redball.getCenter();
+		D3DXVECTOR3 w_coord = g_target_whiteball.getCenter();
+
+		if (r_coord.z - M_RADIUS == w_coord.z + M_RADIUS) {
+			return true;
+		}*/
+		
 		return false;
-	}
+	} 
 	
 	void hitBy(CSphere& ball) {
-		/* 이런 느낌으로 쓰면 될 것 같은데 getCenter 안됨
+		//이런 느낌으로 쓰면 될 것 같은데 getCenter 안됨
+		/*
 		https://m.blog.naver.com/PostView.nhn?blogId=caminq&logNo=100133230971&proxyReferer=https:%2F%2Fwww.google.co.kr%2F
 		
 		D3DXVECTOR3 coord = ball.getCenter();
@@ -129,7 +159,17 @@ public:
 			if (x >= 0 && y == 13) {  //오른쪽 벽에 부딪혔을 때
 				ay *= (-1);
 				y = y + ay + ay;
-			}*/
+			}
+		}
+		*/
+		
+		// hasIntersected==true 일 때
+		//if (hasIntersected) {
+			// 빨간 공이 노란공에 부딪혔을 때
+
+			// 빨간 공이 하얀 공에 부딪혔을 때
+
+		//}
 
 	}
 
@@ -146,7 +186,7 @@ public:
 			float tZ = cord.z + TIME_SCALE*timeDiff*m_velocity_z;
 
 			//correction of position of ball
-			// Please uncomment this part because this correction of ball position is necessary when a ball collides with a wall
+			//Please uncomment this part because this correction of ball position is necessary when a ball collides with a wall
 			//벽 충돌부 구현 완료
 
 			if(tX >= (2.56f - M_RADIUS))
@@ -200,7 +240,6 @@ private:
     ID3DXMesh*              m_pSphereMesh;
 	
 };
-
 
 
 // -----------------------------------------------------------------------------
@@ -266,6 +305,7 @@ public:
 	bool hasIntersected(CSphere& ball) 
 	{
 		// Insert your code here. 위에 구현해서 똑같이 쓰면 됨.
+
 		return false;
 	}
 
@@ -285,7 +325,6 @@ public:
 	}
 	
     float getHeight(void) const { return M_HEIGHT; }
-	
 	
 	
 private :
@@ -388,13 +427,13 @@ private:
 // -----------------------------------------------------------------------------
 CWall	g_legoPlane;
 CWall	g_legowall[4];
-CSphere	g_sphere[5]; //공 갯수 설정
+CSphere	g_sphere[57]; //Yellow ball
 CSphere	g_target_whiteball;
 CSphere g_moving_redball; //움직이는 빨간 공 설정
 CLight	g_light;
 static bool isReset = true;
 
-double g_camera_pos[3] = {0.0, 5.0, -8.0};
+double g_camera_pos[3] = {0.0, 5.0, -12.0};
 
 // -----------------------------------------------------------------------------
 // Functions
@@ -406,34 +445,46 @@ void destroyAllLegoBlock(void)
 
 }
 
-// initialization 공 처음 셋업
+// Gameboard initialization
 bool Setup()
 {
-	int i;
+	int i, j, k=0;
 	
     D3DXMatrixIdentity(&g_mWorld);
     D3DXMatrixIdentity(&g_mView);
     D3DXMatrixIdentity(&g_mProj);
 		
 	// create plane and set the position
-    if (false == g_legoPlane.create(Device, -1, -1, 5, 0.03f, 8, d3d::BLACK)) return false;
+    if (false == g_legoPlane.create(Device, -1, -1, 6, 0.03f, 8, d3d::BLACK)) return false;
     g_legoPlane.setPosition(0.0f, -0.0006f / 5, 0.0f);
 	
 	// create walls and set the position. note that there are four walls
-	if (false == g_legowall[0].create(Device, -1, -1, 5.25f, 0.3f, 0.12f, d3d::CYAN)) return false;
+	if (false == g_legowall[0].create(Device, -1, -1, 6.25f, 0.3f, 0.12f, d3d::CYAN)) return false;
 	g_legowall[0].setPosition(0.0f, 0.12f, 3.99f);
-	if (false == g_legowall[1].create(Device, -1, -1, 5.25f, 0.3f, 0.12f, d3d::CYAN)) return false;//아래벽 게임 진행 시 보이는 경계 바로 아래에 위치 : 부딪히면 공 respawn 위해
+	if (false == g_legowall[1].create(Device, -1, -1, 6.25f, 0.3f, 0.12f, d3d::CYAN)) return false;//아래벽 게임 진행 시 보이는 경계 바로 아래에 위치 : 부딪히면 공 respawn 위해
 	g_legowall[1].setPosition(0.0f, 0.12f, -4.99f);
 	if (false == g_legowall[2].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
-	g_legowall[2].setPosition(2.56f, 0.12f, 0.0f);
+	g_legowall[2].setPosition(3.f, 0.12f, 0.0f);
 	if (false == g_legowall[3].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
-	g_legowall[3].setPosition(-2.56f, 0.12f, 0.0f);
+	g_legowall[3].setPosition(-3.f, 0.12f, 0.0f);
 
-	// create 5 balls and set the position
-	for (i=0;i<5;i++) {
+	// 공 생성. create 5 balls and set the position
+	/*for (i=0;i<5;i++) {
 		if (false == g_sphere[i].create(Device, d3d::YELLOW)) return false;
 		g_sphere[i].setCenter(spherePos[i][0], (float)M_RADIUS , spherePos[i][1]);
 		g_sphere[i].setPower(0,0);
+	}*/
+	
+	// smile 배열로 공 생성
+	for (i = 0; i < 14; i++) {
+		for (j = 0; j < 14; j++) {
+			if (smile[i][j] != 0) {
+				if (false == g_sphere[k].create(Device, d3d::YELLOW)) return false;
+				g_sphere[k].setCenter(-2.3f+j*0.36f, (float)M_RADIUS, -2.f+i*0.36);
+				g_sphere[k].setPower(0, 0);
+				k++;
+			}
+		}
 	}
 
 	// create white ball for set direction  마우스 커서 움직임 따라가는 것 초기화 때문에 일단 맨 왼쪽으로 설정
@@ -500,7 +551,8 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 {
 	int i=0;
 	int j = 0;
-
+	
+	//timeDelta = 0.001;
 
 	if( Device )
 	{
@@ -517,7 +569,7 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 		}
 
 		// update the position of each ball. during update, check whether each ball hit by walls.
-		for( i = 0; i < 5; i++) {
+		for( i = 0; i < 57; i++) {
 			g_sphere[i].ballUpdate(timeDelta);
 		}
 
@@ -529,7 +581,7 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 
 
 		// check whether any two balls hit together and update the direction of balls
-		for(i = 0 ;i < 5; i++){
+		for(i = 0 ;i < 57; i++){
 			g_sphere[i].hitBy(g_moving_redball);
 		}
 
@@ -540,7 +592,7 @@ bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
 		for (i=0;i<4;i++) 	{
 			g_legowall[i].draw(Device, g_mWorld);
 		}
-		for (i = 0; i < 5; i++) {
+		for (i = 0; i < 57; i++) {
 			g_sphere[i].draw(Device, g_mWorld);
 		}
 		
@@ -595,11 +647,8 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
 				g_moving_redball.setPower(distance * cos(theta), distance * sin(theta));
 
-	
-
 				
 				break;
-
 			}
 			break;
         }
@@ -612,7 +661,9 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			float dy;
 			int x_pos;
           
-            if (isReset) {//하얀공 마우스 따라 움직이기, 첫 흰공 위치와 관계없이 잘 맞도록 하고 싶기는 한데 아직 해결 못함 + 왼쪽 오른쪽 벽 너머 공간에 마우스 커서 따라서 못가게 하기
+            if (isReset) {
+				// 하얀공 마우스 따라 움직이기, 첫 흰공 위치와 관계없이 잘 맞도록 하고 싶기는 한데 아직 해결 못함
+				// 왼쪽 오른쪽 벽 너머 공간에 마우스 커서 따라서 못가게 하기
 
 				dx = (old_x - new_x);
 				dy = (old_y - new_y);// * 0.01f;
@@ -626,7 +677,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				move = WORLD_MOVE;
 
-        
 			// world 회전하는 부분 필요 없음
              /*     D3DXVECTOR3 vDist;
                     D3DXVECTOR3 vTrans;
@@ -645,7 +695,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         break;
                     }*/
                 
-				
                 old_x = new_x;
                 old_y = new_y;
 
@@ -668,7 +717,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
 	}
-	
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -692,6 +740,9 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		return 0;
 	}
 	
+	// 여기에 timedelta 초기화하고 
+	// timedelta 마다 Display를 call 하는거 아닐까???
+	//
 	d3d::EnterMsgLoop( Display );
 	
 	Cleanup();

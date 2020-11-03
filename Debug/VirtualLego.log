@@ -1,18 +1,19 @@
 ﻿cl : 명령줄 warning D9035: 'Gm' 옵션은 더 이상 사용되지 않으므로 이후 릴리스에서 제거될 예정입니다.
   virtualLego.cpp
-c:\users\sheee\source\oop16_proj3\d3dutility.h(23): warning C4005: 'INFINITY': 매크로 재정의
-  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\corecrt_math.h(89): note: 'INFINITY'의 이전 정의를 참조하십시오.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(115): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(130): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(132): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(134): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(136): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(153): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(154): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(266): warning C4305: 'return': 'double'에서 'float'(으)로 잘립니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(596): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(597): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(634): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(635): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\sheee\source\oop16_proj3\virtuallego.cpp(592): warning C4101: 'x_pos' :참조되지 않은 지역 변수입니다.
-  VirtualLego.vcxproj -> C:\Users\sheee\source\oop16_proj3\.\Debug\VirtualLego.exe
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\d3dUtility.h(23,1): warning C4005: 'INFINITY': 매크로 재정의
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_math.h(90): message : 'INFINITY'의 이전 정의를 참조하십시오.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(178,1): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(193,1): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(195,1): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(197,1): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(199,1): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(216,24): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(217,24): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(327,33): warning C4305: 'return': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(483,63): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(671,17): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(672,17): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(708,17): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(709,17): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\virtualLego.cpp(665,8): warning C4101: 'x_pos' :참조되지 않은 지역 변수입니다.
+  VirtualLego.vcxproj -> C:\Users\강소정\Desktop\NewARKANOID-master\NewARKANOID-master\.\Debug\VirtualLego.exe
