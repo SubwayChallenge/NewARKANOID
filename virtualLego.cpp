@@ -120,6 +120,21 @@ public:
 	
     bool hasIntersected(CSphere& ball) 
 	{
+
+		//하얀 공과 부딪혔을 때
+		D3DXVECTOR3 targetpos = this->getCenter();
+		D3DXVECTOR3 movpos = ball.getCenter();
+
+		double theta = acos(sqrt(pow(targetpos.x - movpos.x, 2)) / sqrt(pow(targetpos.x - movpos.x, 2) +
+			pow(targetpos.z - movpos.z, 2)));		// 기본 1 사분면
+		if (targetpos.z - movpos.z <= 0 && targetpos.x - movpos.x >= 0) { theta = -theta; }	//4 사분면
+		if (targetpos.z - movpos.z >= 0 && targetpos.x - movpos.x <= 0) { theta = PI - theta; } //2 사분면
+		if (targetpos.z - movpos.z <= 0 && targetpos.x - movpos.x <= 0) { theta = PI + theta; } // 3 사분면
+		double distance = sqrt(pow(targetpos.x - movpos.x, 2) + pow(targetpos.z - movpos.z, 2));
+
+		if (distance - (2 * M_RADIUS))
+			return true;
+
 		// Insert your code here.
 		//빨간 공이 노란공에 부딪혔을 때 return true
 
@@ -202,10 +217,12 @@ public:
 		}
 		else { this->setPower(0,0);}
 		//this->setPower(this->getVelocity_X() * DECREASE_RATE, this->getVelocity_Z() * DECREASE_RATE);
-		double rate = 1 -  (1 - DECREASE_RATE)*timeDiff * 400;
+		double rate = 1 -  (1 - DECREASE_RATE)*timeDiff *4000;
 		if(rate < 0 )
 			rate = 0;
-		this->setPower(getVelocity_X() * rate, getVelocity_Z() * rate);
+		//공 속도 늘림
+		//공이 대각선으로 부딪힐 때 작동 확인 필요
+		this->setPower(getVelocity_X() * rate, getVelocity_Z() * rate+0.01);
 	}
 
 	double getVelocity_X() { return this->m_velocity_x;	}
@@ -547,12 +564,10 @@ void Cleanup(void)
 
 // timeDelta represents the time between the current image frame and the last image frame.
 // the distance of moving balls should be "velocity * timeDelta"
-bool Display(float timeDelta)  //timeDelta 초기화가 어디서 되는지 못찾겠음
+bool Display(float timeDelta)
 {
 	int i=0;
 	int j = 0;
-	
-	//timeDelta = 0.001;
 
 	if( Device )
 	{
@@ -638,6 +653,10 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				isReset = false;
 
 				D3DXVECTOR3 targetpos = g_target_whiteball.getCenter();
+				//스페이스 누를 시 다시 처음부터 시작
+				g_target_whiteball.setCenter(targetpos.x, targetpos.y, -3.95f);
+				g_moving_redball.setCenter(targetpos.x, targetpos.y, -3.95f + ((float)M_RADIUS * 2));
+				g_moving_redball.setPower(0, 0);
 				D3DXVECTOR3	redpos = g_moving_redball.getCenter();
 				double theta = acos(sqrt(pow(targetpos.x - redpos.x, 2)) / sqrt(pow(targetpos.x - redpos.x, 2) +
 					pow(targetpos.z - redpos.z, 2)));		// 기본 1 사분면
