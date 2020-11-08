@@ -44,7 +44,7 @@ bool d3d::InitD3D(
 		
 	HWND hwnd = 0;
     hwnd = ::CreateWindow("Direct3D9App",
-        "Virtual Billiard", 
+        "REAL ARKANOID",   //이름 변경
 		WS_EX_TOPMOST,
 		0, 0, width, height,
 		0 /*parent hwnd*/, 0 /* menu */, hInstance, 0 /*extra*/); 
@@ -161,7 +161,7 @@ int d3d::EnterMsgLoop( bool (*ptr_display)(float timeDelta) )
 		else
         {	
 			double currTime  = (double)timeGetTime();
-			double timeDelta = (currTime - lastTime)*0.0007;
+			double timeDelta = (currTime - lastTime)*0.0009;   //타임델타 여깄었네 조금 빠르게 수정
 			ptr_display((float)timeDelta);
 
 			lastTime = currTime;

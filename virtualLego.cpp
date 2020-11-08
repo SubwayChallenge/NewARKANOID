@@ -58,7 +58,7 @@ D3DXMATRIX g_mProj;
 #define M_RADIUS 0.18   // ball radius
 #define PI 3.14159265
 #define M_HEIGHT 0.01
-#define DECREASE_RATE 0.9982
+#define DECREASE_RATE 0.9982  
 
 // -----------------------------------------------------------------------------
 // CSphere class definition
@@ -120,8 +120,18 @@ public:
 	
     bool hasIntersected(CSphere& ball) 
 	{
+		D3DXVECTOR3 targetpos = this->getCenter();
+		D3DXVECTOR3 movpos = ball.getCenter();
 
-		//하얀 공과 부딪혔을 때
+		double distance = sqrt(pow(targetpos.x - movpos.x, 2) + pow(targetpos.z - movpos.z, 2));
+
+		if ((distance - (2 * M_RADIUS))<=0)
+			return true;
+
+		return false;
+	} 
+	
+	void hitBy(CSphere& ball) {
 		D3DXVECTOR3 targetpos = this->getCenter();
 		D3DXVECTOR3 movpos = ball.getCenter();
 
@@ -130,62 +140,13 @@ public:
 		if (targetpos.z - movpos.z <= 0 && targetpos.x - movpos.x >= 0) { theta = -theta; }	//4 사분면
 		if (targetpos.z - movpos.z >= 0 && targetpos.x - movpos.x <= 0) { theta = PI - theta; } //2 사분면
 		if (targetpos.z - movpos.z <= 0 && targetpos.x - movpos.x <= 0) { theta = PI + theta; } // 3 사분면
-		double distance = sqrt(pow(targetpos.x - movpos.x, 2) + pow(targetpos.z - movpos.z, 2));
-
-		if (distance - (2 * M_RADIUS))
-			return true;
-
-		// Insert your code here.
-		//빨간 공이 노란공에 부딪혔을 때 return true
-
-		//빨간 공이 하얀 공에 부딪혔을 때 return true
-		/*D3DXVECTOR3 r_coord = g_moving_redball.getCenter();
-		D3DXVECTOR3 w_coord = g_target_whiteball.getCenter();
-
-		if (r_coord.z - M_RADIUS == w_coord.z + M_RADIUS) {
-			return true;
-		}*/
 		
-		return false;
-	} 
-	
-	void hitBy(CSphere& ball) {
-		//이런 느낌으로 쓰면 될 것 같은데 getCenter 안됨
-		/*
-		https://m.blog.naver.com/PostView.nhn?blogId=caminq&logNo=100133230971&proxyReferer=https:%2F%2Fwww.google.co.kr%2F
-		
-		D3DXVECTOR3 coord = ball.getCenter();
-
-		if (tX >= (2.56f - M_RADIUS))
-			tX = 2.56f - M_RADIUS;
-		else if (tX <= (-2.56f + M_RADIUS))
-			tX = -2.56f + M_RADIUS;
-		else if (tZ <= (-6.99f + M_RADIUS))
-			tZ = -5.09f + M_RADIUS;
-		else if (tZ >= (3.99f - M_RADIUS))
-			tZ = 3.99f - M_RADIUS;
-
-
-		if (block_array[x][y] == 1) { //공이 벽에 부딪칠 경우
-			if (x >= 0 && y == 0) {   //왼쪽 벽에 부딪혔을 때
-				ay *= (-1);
-				y = y + ay + ay;
-			}
-			if (x >= 0 && y == 13) {  //오른쪽 벽에 부딪혔을 때
-				ay *= (-1);
-				y = y + ay + ay;
+		if (this->hasIntersected(ball)==true) {
+			ball.setPower(-2*cos(theta), -2 *sin(theta));
+			if (targetpos.z > -3) {
+				this->setCenter(-10,0,-10);  //굳이 이부분에서 공이 진짜로 없어지게 하려면 다음display 때, 공  인덱스 기록하고 draw를 안하면 됨.
 			}
 		}
-		*/
-		
-		// hasIntersected==true 일 때
-		//if (hasIntersected) {
-			// 빨간 공이 노란공에 부딪혔을 때
-
-			// 빨간 공이 하얀 공에 부딪혔을 때
-
-		//}
-
 	}
 
 	void ballUpdate(float timeDiff) 
@@ -193,8 +154,8 @@ public:
 		const float TIME_SCALE = 3.3;
 		D3DXVECTOR3 cord = this->getCenter();
 		double vx = abs(this->getVelocity_X());
-		double vz = abs(this->getVelocity_Z());
-
+		double vz= abs(this->getVelocity_Z());
+		
 		if(vx > 0.01 || vz > 0.01)
 		{
 			float tX = cord.x + TIME_SCALE*timeDiff*m_velocity_x;
@@ -204,25 +165,24 @@ public:
 			//Please uncomment this part because this correction of ball position is necessary when a ball collides with a wall
 			//벽 충돌부 구현 완료
 
-			if(tX >= (2.56f - M_RADIUS))
-				tX = 2.56f - M_RADIUS;
-			else if(tX <=(-2.56f + M_RADIUS))
-				tX = -2.56f + M_RADIUS;
+			/*if(tX >= (3.0f - M_RADIUS))
+				tX = 3.0f - M_RADIUS;
+			else if(tX <=(-3.0f + M_RADIUS))
+				tX = -3.0f + M_RADIUS;
 			else if(tZ <= (-6.99f + M_RADIUS))
 				tZ = -5.09f + M_RADIUS;
 			else if(tZ >= (3.99f - M_RADIUS))
 				tZ = 3.99f - M_RADIUS;
-			
+			*/
 			this->setCenter(tX, cord.y, tZ);
 		}
 		else { this->setPower(0,0);}
 		//this->setPower(this->getVelocity_X() * DECREASE_RATE, this->getVelocity_Z() * DECREASE_RATE);
-		double rate = 1 -  (1 - DECREASE_RATE)*timeDiff *4000;
+		double rate = 1 -  (1 - DECREASE_RATE)*timeDiff *200;
 		if(rate < 0 )
 			rate = 0;
-		//공 속도 늘림
-		//공이 대각선으로 부딪힐 때 작동 확인 필요
-		this->setPower(getVelocity_X() * rate, getVelocity_Z() * rate+0.01);
+
+		this->setPower(getVelocity_X() * rate, getVelocity_Z() * rate);
 	}
 
 	double getVelocity_X() { return this->m_velocity_x;	}
@@ -321,14 +281,72 @@ public:
 	
 	bool hasIntersected(CSphere& ball) 
 	{
-		// Insert your code here. 위에 구현해서 똑같이 쓰면 됨.
+		const float TIME_SCALE = 3.3;
+		D3DXVECTOR3 cord = ball.getCenter();
 
+		if (cord.x >= (3.0f - M_RADIUS)) {
+			cord.x = 3.0f - M_RADIUS;
+			ball.setCenter(cord.x, cord.y, cord.z);
+			return true;
+		}	
+		else if (cord.x <= (-3.0f + M_RADIUS)) {
+			cord.x = -3.0f + M_RADIUS;
+			ball.setCenter(cord.x, cord.y, cord.z);
+			return true;
+		}	
+		else if (cord.z <= (-6.5f + M_RADIUS)) {
+			cord.z = -5.09f + M_RADIUS;
+			ball.setCenter(cord.x, cord.y, cord.z);
+			return true;
+		}
+		else if (cord.z >= (3.99f - M_RADIUS)) {
+			cord.z = 3.99f - M_RADIUS;
+			ball.setCenter(cord.x, cord.y, cord.z);
+			return true;
+		}
 		return false;
 	}
 
 	void hitBy(CSphere& ball) 
 	{
-		// Insert your code here.위에 구현해서 똑같이 쓰면 됨.
+		D3DXVECTOR3 movpos = ball.getCenter();
+		float tarx = movpos.x;
+		float tarz = movpos.z;
+		float vx = ball.getVelocity_X();
+		float vz = ball.getVelocity_Z();
+
+		if (movpos.x >= (3.0f - 2 * M_RADIUS)) {
+			tarx = tarx + 8 * M_RADIUS;
+		}
+		else if (movpos.x <= (-3.0f + 2 * M_RADIUS)) {
+			tarx = tarx - 8 * M_RADIUS;
+		}
+		else if (movpos.z <= (-6.99f + 2 * M_RADIUS)) {
+			tarz = tarz - 8 * M_RADIUS;
+		}
+		else if (movpos.z >= (3.99f - 2*M_RADIUS)) {
+			tarz = tarz + 8*M_RADIUS;
+		}
+		double theta = acos(sqrt(pow(tarx - movpos.x, 2)) / sqrt(pow(tarx - movpos.x, 2) +
+			pow(tarz - movpos.z, 2)));		// 기본 1 사분면
+		if (tarz - movpos.z <= 0 && tarx - movpos.x >= 0) { theta = -theta; }	//4 사분면
+		if (tarz - movpos.z >= 0 && tarx - movpos.x <= 0) { theta = PI - theta; } //2 사분면
+		if (tarz - movpos.z <= 0 && tarx - movpos.x <= 0) { theta = PI + theta; } // 3 사분면
+
+		if (this->hasIntersected(ball) == true) {
+			if (movpos.x >= (3.0f - 2 * M_RADIUS)) {
+				ball.setPower(vx-cos(theta)*4, vz+sin(theta)*4);
+			}
+			if (movpos.x <= (-3.0f + 2 * M_RADIUS)) {
+				ball.setPower(vx + cos(theta) * 4, vz + sin(theta) * 4);
+			}
+			if (movpos.z <= (-6.99f + 2 * M_RADIUS)) {
+				ball.setPower(vx, vz);
+			}
+			if (movpos.z >= (3.99f - 2 * M_RADIUS)) {
+				ball.setPower(vx - cos(theta) * 4, vz - sin(theta) * 4);
+			}
+		}
 	}    
 	
 	void setPosition(float x, float y, float z)
@@ -476,7 +494,7 @@ bool Setup()
     g_legoPlane.setPosition(0.0f, -0.0006f / 5, 0.0f);
 	
 	// create walls and set the position. note that there are four walls
-	if (false == g_legowall[0].create(Device, -1, -1, 6.25f, 0.3f, 0.12f, d3d::CYAN)) return false;
+	if (false == g_legowall[0].create(Device, -1, -1, 6.05f, 0.3f, 0.12f, d3d::CYAN)) return false;
 	g_legowall[0].setPosition(0.0f, 0.12f, 3.99f);
 	if (false == g_legowall[1].create(Device, -1, -1, 6.25f, 0.3f, 0.12f, d3d::CYAN)) return false;//아래벽 게임 진행 시 보이는 경계 바로 아래에 위치 : 부딪히면 공 respawn 위해
 	g_legowall[1].setPosition(0.0f, 0.12f, -4.99f);
@@ -506,7 +524,7 @@ bool Setup()
 
 	// create white ball for set direction  마우스 커서 움직임 따라가는 것 초기화 때문에 일단 맨 왼쪽으로 설정
     if (false == g_target_whiteball.create(Device, d3d::WHITE)) return false;
-	g_target_whiteball.setCenter(-2.96f, (float)M_RADIUS , -3.95f);
+	g_target_whiteball.setCenter(-3.f, (float)M_RADIUS , -3.95f);
 	g_target_whiteball.setPower(0, 0);
 
 
@@ -573,34 +591,46 @@ bool Display(float timeDelta)
 	{
 		Device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00afafaf, 1.0f, 0);
 		Device->BeginScene();
-		
-		//빨간공 아래로 내려가면 스페이스 안누른 상태로 만들기.
+
+		//빨간공 아래로 떨어지면 초기 위치 + 스페이스 안누른 상태로 만들기.
 		D3DXVECTOR3 coord = g_moving_redball.getCenter();
 		if (coord.z <-5.5f) {
 			isReset = true;
 			D3DXVECTOR3 coord2 = g_target_whiteball.getCenter();
+			g_target_whiteball.setCenter(coord2.x, coord2.y, -3.95f);
 			g_moving_redball.setCenter(coord2.x, (float)M_RADIUS, coord2.z + ((float)M_RADIUS * 2));
 			g_moving_redball.setPower(0, 0);
 		}
-
+		D3DXVECTOR3 coordy;
 		// update the position of each ball. during update, check whether each ball hit by walls.
 		for( i = 0; i < 57; i++) {
+			coordy = g_sphere[i].getCenter();
 			g_sphere[i].ballUpdate(timeDelta);
 		}
-
+		
 		g_moving_redball.ballUpdate(timeDelta);
+
 		for (j = 0; j < 4; j++) 
 		{
-			g_legowall[i].hitBy(g_moving_redball);
+			if (isReset == false) {  //시작 안했을 때는 서로 붙어있어야 하니까
+				g_legowall[i].hitBy(g_moving_redball);
+				g_legowall[i].hasIntersected(g_target_whiteball);
+			}
+			else {  //마우스 따라 오른쪽 왼쪽 넘어가지 않게
+				g_legowall[i].hasIntersected(g_moving_redball);
+				g_legowall[i].hasIntersected(g_target_whiteball);
+			}
 		}
-
-
-		// check whether any two balls hit together and update the direction of balls
-		for(i = 0 ;i < 57; i++){
+		
+		for (i = 0; i < 57; i++) {
 			g_sphere[i].hitBy(g_moving_redball);
 		}
 
-		g_target_whiteball.hitBy(g_moving_redball);
+		// check whether any two balls hit together and update the direction of balls
+		if (isReset == false) {  //시작 안했을 때는 서로 붙어있어야 하니까
+			g_target_whiteball.hitBy(g_moving_redball);
+		}
+		
 
 		// draw plane, walls, and spheres
 		g_legoPlane.draw(Device, g_mWorld);
@@ -628,7 +658,9 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     static int old_x = 0;
     static int old_y = 0;
     static enum { WORLD_MOVE, LIGHT_MOVE, BLOCK_MOVE } move = WORLD_MOVE;
-
+	HDC hdc;
+	int wmid, wmEvent;
+	PAINTSTRUCT ps;
 	
 	switch( msg ) {
 	case WM_DESTROY:
@@ -653,10 +685,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				isReset = false;
 
 				D3DXVECTOR3 targetpos = g_target_whiteball.getCenter();
-				//스페이스 누를 시 다시 처음부터 시작
-				g_target_whiteball.setCenter(targetpos.x, targetpos.y, -3.95f);
-				g_moving_redball.setCenter(targetpos.x, targetpos.y, -3.95f + ((float)M_RADIUS * 2));
-				g_moving_redball.setPower(0, 0);
 				D3DXVECTOR3	redpos = g_moving_redball.getCenter();
 				double theta = acos(sqrt(pow(targetpos.x - redpos.x, 2)) / sqrt(pow(targetpos.x - redpos.x, 2) +
 					pow(targetpos.z - redpos.z, 2)));		// 기본 1 사분면
@@ -664,7 +692,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				if (targetpos.z - redpos.z >= 0 && targetpos.x - redpos.x <= 0) { theta = PI - theta; } //2 사분면
 				if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x <= 0){ theta = PI + theta; } // 3 사분면
 				double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
-				g_moving_redball.setPower(distance * cos(theta), distance * sin(theta));
+				g_moving_redball.setPower(distance * cos(theta), 2 * sin(theta));
 
 				
 				break;
@@ -681,8 +709,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			int x_pos;
           
             if (isReset) {
-				// 하얀공 마우스 따라 움직이기, 첫 흰공 위치와 관계없이 잘 맞도록 하고 싶기는 한데 아직 해결 못함
-				// 왼쪽 오른쪽 벽 너머 공간에 마우스 커서 따라서 못가게 하기
 
 				dx = (old_x - new_x);
 				dy = (old_y - new_y);// * 0.01f;
@@ -695,24 +721,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				old_y = new_y;
 
 				move = WORLD_MOVE;
-
-			// world 회전하는 부분 필요 없음
-             /*     D3DXVECTOR3 vDist;
-                    D3DXVECTOR3 vTrans;
-                    D3DXMATRIX mTrans;
-                    D3DXMATRIX mX;
-                    D3DXMATRIX mY;
-					
-                    switch (move) {
-                    case WORLD_MOVE:
-                        dx = (old_x - new_x) * 0.01f;
-                        dy = (old_y - new_y) * 0.01f;
-                        D3DXMatrixRotationY(&mX, dx);
-                        D3DXMatrixRotationX(&mY, dy);
-                        g_mWorld = g_mWorld * mX * mY;
-						
-                        break;
-                    }*/
                 
                 old_x = new_x;
                 old_y = new_y;
@@ -732,9 +740,18 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				move = WORLD_MOVE;
 
 			}
-
             break;
         }
+	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &ps);
+		SetTextColor(hdc, 0 * 00000000);
+		char buffer[80];
+
+		sprintf(buffer, "점수 : %d", 80);
+		TextOut(hdc, 3, 3, buffer, strlen(buffer));
+
+		EndPaint(hwnd, &ps);
+		break;
 	}
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
 }
@@ -744,7 +761,8 @@ int WINAPI WinMain(HINSTANCE hinstance,
 				   PSTR cmdLine,
 				   int showCmd)
 {
-    srand(static_cast<unsigned int>(time(NULL)));
+	
+	srand(static_cast<unsigned int>(time(NULL)));
 	
 	if(!d3d::InitD3D(hinstance,
 		Width, Height, true, D3DDEVTYPE_HAL, &Device))
@@ -759,9 +777,6 @@ int WINAPI WinMain(HINSTANCE hinstance,
 		return 0;
 	}
 	
-	// 여기에 timedelta 초기화하고 
-	// timedelta 마다 Display를 call 하는거 아닐까???
-	//
 	d3d::EnterMsgLoop( Display );
 	
 	Cleanup();
