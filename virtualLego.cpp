@@ -58,7 +58,7 @@ D3DXMATRIX g_mProj;
 #define M_RADIUS 0.18   // ball radius
 #define PI 3.14159265
 #define M_HEIGHT 0.01
-#define DECREASE_RATE 0.9982  
+#define DECREASE_RATE 0.9997  
 
 // -----------------------------------------------------------------------------
 // CSphere class definition
@@ -161,23 +161,10 @@ public:
 			float tX = cord.x + TIME_SCALE*timeDiff*m_velocity_x;
 			float tZ = cord.z + TIME_SCALE*timeDiff*m_velocity_z;
 
-			//correction of position of ball
-			//Please uncomment this part because this correction of ball position is necessary when a ball collides with a wall
-			//벽 충돌부 구현 완료
-
-			/*if(tX >= (3.0f - M_RADIUS))
-				tX = 3.0f - M_RADIUS;
-			else if(tX <=(-3.0f + M_RADIUS))
-				tX = -3.0f + M_RADIUS;
-			else if(tZ <= (-6.99f + M_RADIUS))
-				tZ = -5.09f + M_RADIUS;
-			else if(tZ >= (3.99f - M_RADIUS))
-				tZ = 3.99f - M_RADIUS;
-			*/
 			this->setCenter(tX, cord.y, tZ);
 		}
 		else { this->setPower(0,0);}
-		//this->setPower(this->getVelocity_X() * DECREASE_RATE, this->getVelocity_Z() * DECREASE_RATE);
+		
 		double rate = 1 -  (1 - DECREASE_RATE)*timeDiff *200;
 		if(rate < 0 )
 			rate = 0;
@@ -327,24 +314,18 @@ public:
 		else if (movpos.z >= (3.99f - 2*M_RADIUS)) {
 			tarz = tarz + 8*M_RADIUS;
 		}
-		double theta = acos(sqrt(pow(tarx - movpos.x, 2)) / sqrt(pow(tarx - movpos.x, 2) +
-			pow(tarz - movpos.z, 2)));		// 기본 1 사분면
-		if (tarz - movpos.z <= 0 && tarx - movpos.x >= 0) { theta = -theta; }	//4 사분면
-		if (tarz - movpos.z >= 0 && tarx - movpos.x <= 0) { theta = PI - theta; } //2 사분면
-		if (tarz - movpos.z <= 0 && tarx - movpos.x <= 0) { theta = PI + theta; } // 3 사분면
-
 		if (this->hasIntersected(ball) == true) {
 			if (movpos.x >= (3.0f - 2 * M_RADIUS)) {
-				ball.setPower(vx-cos(theta)*4, vz+sin(theta)*4);
+				ball.setPower(-vx * 1.15, vz*1.15);
 			}
 			if (movpos.x <= (-3.0f + 2 * M_RADIUS)) {
-				ball.setPower(vx + cos(theta) * 4, vz + sin(theta) * 4);
+				ball.setPower(-vx *1.15, vz *1.15);
 			}
 			if (movpos.z <= (-6.99f + 2 * M_RADIUS)) {
 				ball.setPower(vx, vz);
 			}
 			if (movpos.z >= (3.99f - 2 * M_RADIUS)) {
-				ball.setPower(vx - cos(theta) * 4, vz - sin(theta) * 4);
+				ball.setPower(vx*1.15, -vz * 1.15);
 			}
 		}
 	}    
@@ -490,17 +471,17 @@ bool Setup()
     D3DXMatrixIdentity(&g_mProj);
 		
 	// create plane and set the position
-    if (false == g_legoPlane.create(Device, -1, -1, 6, 0.03f, 8, d3d::BLACK)) return false;
+    if (false == g_legoPlane.create(Device, -1, -1, 6, 0.03f, 8, d3d::GRAY)) return false;
     g_legoPlane.setPosition(0.0f, -0.0006f / 5, 0.0f);
 	
 	// create walls and set the position. note that there are four walls
-	if (false == g_legowall[0].create(Device, -1, -1, 6.05f, 0.3f, 0.12f, d3d::CYAN)) return false;
+	if (false == g_legowall[0].create(Device, -1, -1, 6.08f, 0.3f, 0.12f, d3d::CYAN)) return false;
 	g_legowall[0].setPosition(0.0f, 0.12f, 3.99f);
 	if (false == g_legowall[1].create(Device, -1, -1, 6.25f, 0.3f, 0.12f, d3d::CYAN)) return false;//아래벽 게임 진행 시 보이는 경계 바로 아래에 위치 : 부딪히면 공 respawn 위해
 	g_legowall[1].setPosition(0.0f, 0.12f, -4.99f);
-	if (false == g_legowall[2].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
+	if (false == g_legowall[2].create(Device, -1, -1, 0.12f, 0.3f, 8.0f, d3d::CYAN)) return false;
 	g_legowall[2].setPosition(3.f, 0.12f, 0.0f);
-	if (false == g_legowall[3].create(Device, -1, -1, 0.12f, 0.3f, 7.98f, d3d::CYAN)) return false;
+	if (false == g_legowall[3].create(Device, -1, -1, 0.12f, 0.3f, 8.0f, d3d::CYAN)) return false;
 	g_legowall[3].setPosition(-3.f, 0.12f, 0.0f);
 
 	// 공 생성. create 5 balls and set the position
@@ -528,7 +509,7 @@ bool Setup()
 	g_target_whiteball.setPower(0, 0);
 
 
-	if (false == g_moving_redball.create(Device, d3d::RED)) return false;
+	if (false == g_moving_redball.create(Device, d3d::DARKRED)) return false;
 	D3DXVECTOR3 startpos = g_target_whiteball.getCenter();
 	g_moving_redball.setCenter(startpos.x, (float)M_RADIUS, startpos.z+((float)M_RADIUS*2));
 	g_moving_redball.setPower(0, 0);
@@ -540,16 +521,16 @@ bool Setup()
     lit.Diffuse      = d3d::WHITE; 
 	lit.Specular     = d3d::WHITE * 0.9f;
     lit.Ambient      = d3d::WHITE * 0.9f;
-    lit.Position     = D3DXVECTOR3(0.0f, 3.0f, 0.0f);
+    lit.Position     = D3DXVECTOR3(0.0f, 5.5f, -1.0f);
     lit.Range        = 100.0f;
     lit.Attenuation0 = 0.0f;
-    lit.Attenuation1 = 0.9f;
+    lit.Attenuation1 = 0.5f;
     lit.Attenuation2 = 0.0f;
     if (false == g_light.create(Device, lit))
         return false;
 	
 	// Position and aim the camera.
-	D3DXVECTOR3 pos(0.0f, 5.0f, -8.0f);
+	D3DXVECTOR3 pos(0.0f, 7.0f, -7.5f);
 	D3DXVECTOR3 target(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 up(0.0f, 2.0f, 0.0f);
 	D3DXMatrixLookAtLH(&g_mView, &pos, &target, &up);
@@ -682,17 +663,20 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 }
                 break;
             case VK_SPACE:
-				isReset = false;
+				if (isReset == true)
+				{
+					isReset = false;
 
-				D3DXVECTOR3 targetpos = g_target_whiteball.getCenter();
-				D3DXVECTOR3	redpos = g_moving_redball.getCenter();
-				double theta = acos(sqrt(pow(targetpos.x - redpos.x, 2)) / sqrt(pow(targetpos.x - redpos.x, 2) +
-					pow(targetpos.z - redpos.z, 2)));		// 기본 1 사분면
-				if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x >= 0) { theta = -theta; }	//4 사분면
-				if (targetpos.z - redpos.z >= 0 && targetpos.x - redpos.x <= 0) { theta = PI - theta; } //2 사분면
-				if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x <= 0){ theta = PI + theta; } // 3 사분면
-				double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
-				g_moving_redball.setPower(distance * cos(theta), 2 * sin(theta));
+					D3DXVECTOR3 targetpos = g_target_whiteball.getCenter();
+					D3DXVECTOR3	redpos = g_moving_redball.getCenter();
+					double theta = acos(sqrt(pow(targetpos.x - redpos.x, 2)) / sqrt(pow(targetpos.x - redpos.x, 2) +
+						pow(targetpos.z - redpos.z, 2)));		// 기본 1 사분면
+					if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x >= 0) { theta = -theta; }	//4 사분면
+					if (targetpos.z - redpos.z >= 0 && targetpos.x - redpos.x <= 0) { theta = PI - theta; } //2 사분면
+					if (targetpos.z - redpos.z <= 0 && targetpos.x - redpos.x <= 0) { theta = PI + theta; } // 3 사분면
+					double distance = sqrt(pow(targetpos.x - redpos.x, 2) + pow(targetpos.z - redpos.z, 2));
+					g_moving_redball.setPower(distance * cos(theta), 2 * sin(theta));
+				}
 
 				
 				break;
